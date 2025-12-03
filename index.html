@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PathFinders Network</title>
+  <link rel="icon" href="images/pathfinderslogo.jpg" type="image/png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body { padding-top: 70px; background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .job-card { transition: box-shadow 0.3s ease; cursor: pointer; position: relative; }
+    .job-card:hover { box-shadow: 0 0 11px rgba(33,33,33,.2); }
+    .category-btn.active { background-color: #0d6efd; color: white; }
+    .delete-btn { position: absolute; top: 5px; right: 5px; }
+    #addJobForm { display: none; margin-top: 30px; }
+    
+    /* Responsive fixes */
+    @media (max-width: 992px) {
+      .navbar img { width: 70px !important; }
+    }
+    
+    @media (max-width: 768px) {
+      .navbar-brand { font-size: 1rem; }
+      .navbar img { width: 60px !important; }
+      #categoryFilters { flex-wrap: wrap; justify-content: center; }
+      #categoryFilters .category-btn { margin: 0.25rem; }
+    }
+    
+    @media (max-width: 576px) {
+      .navbar-brand { font-size: 0.85rem; }
+      .navbar img { width: 50px !important; }
+      #categoryFilters .category-btn { font-size: 0.85rem; padding: 0.375rem 0.75rem; }
+      .card-title { font-size: 1rem; }
+      .delete-btn { font-size: 0.7rem; padding: 0.2rem 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary shadow">
+    <div class="container">
+      <a class="navbar-brand" href="#">PathFindersNetwork</a>
+      <img src="images/pathfinderslogo-removebg-preview.png" width="100px" alt="">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto gap-3">
+          <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about-section">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact-section">Contact</a></li>
+          <li class="nav-item"><button id="addJobBtn" class="btn btn-light">Add Job</button></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <br><br><br><br> <br><br>
+
+  <!-- Main container -->
+  <div class="container">
+    <!-- Filters -->
+    <div class="my-4 text-center">
+      <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search jobs by title or company..."/>
+      <div id="categoryFilters" class="btn-group" role="group" aria-label="Categories">
+        <button class="btn btn-outline-primary category-btn active" data-category="all">All</button>
+        <button class="btn btn-outline-primary category-btn" data-category="corporate">Corporate</button>
+        <button class="btn btn-outline-primary category-btn" data-category="professional">Professional</button>
+        <button class="btn btn-outline-primary category-btn" data-category="it">IT</button>
+        <button class="btn btn-outline-primary category-btn" data-category="accounting">Accounting</button>
+        <button class="btn btn-outline-primary category-btn" data-category="retail">Retail</button>
+        <button class="btn btn-outline-primary category-btn" data-category="marketing">Marketing</button>
+      </div>
+    </div>
+
+    <!-- Jobs list -->
+    <div id="jobsList" class="row gy-4"></div>
+
+    <!-- Add Job Form (Admin Only) -->
+    <div id="addJobForm" class="bg-white p-4 rounded shadow">
+      <h4>Add New Job</h4>
+      <form id="jobForm">
+        <div class="mb-3">
+          <label class="form-label">Job Title</label>
+          <input type="text" class="form-control" id="jobTitle" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Company</label>
+          <input type="text" class="form-control" id="jobCompany" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Location</label>
+          <input type="text" class="form-control" id="jobLocation" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="jobCategory" required>
+            <option value="corporate">Corporate</option>
+            <option value="professional">Professional</option>
+            <option value="it">IT</option>
+            <option value="accounting">Accounting</option>
+            <option value="retail">Retail</option>
+            <option value="marketing">Marketing</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Apply Link</label>
+          <input type="url" class="form-control" id="jobLink" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Application Deadline</label>
+          <input type="datetime-local" class="form-control" id="jobDeadline" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Job</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <section id="about-section" class="bg-white py-5 mt-5">
+    <div class="container">
+      <h2>About Us</h2>
+      <p>Welcome to our Job Group Listings platform, where you can find the latest corporate and professional job opportunities posted directly from WhatsApp groups and channels.</p>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact-section" class="bg-light py-5">
+    <div class="container">
+      <h2>Contact Us</h2>
+      <p>Join our WhatsApp group for instant job updates:</p>
+      <a href="https://chat.whatsapp.com/JmTE2035r5UF7jSGPl2QVY" target="_blank" class="btn btn-success">Join WhatsApp Group</a>
+      <p class="mt-3">Or email us at <a href="mailto:pathfinders@gmail.com">pathfinders@gmail.com</a></p>
+    </div>
+  </section>
+ 
+<!-- Footer -->
+<footer class="bg-primary text-white pt-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <!-- About -->
+      <div class="col-md-4 mb-3">
+        <h5>About PathFinders Network</h5>
+        <p>Your go-to platform for the latest corporate and professional job listings directly from WhatsApp groups and channels.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-4 mb-3">
+        <h5>Quick Links</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white text-decoration-none">Home</a></li>
+          <li><a href="#about-section" class="text-white text-decoration-none">About</a></li>
+          <li><a href="#contact-section" class="text-white text-decoration-none">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact / Social -->
+      <div class="col-md-4 mb-3">
+        <h5>Contact Us</h5>
+        <p>Join our WhatsApp group for instant job updates:</p>
+        <a href="https://chat.whatsapp.com/JmTE2035r5UF7jSGPl2QVY" target="_blank" class="btn btn-success btn-sm mb-2">Join WhatsApp</a>
+        <p>Email: <a href="mailto:pathfinders@gmail.com" class="text-white">contact@jobgroup.com</a></p>
+      </div>
+    </div>
+    <hr class="border-light">
+    <div class="text-center pb-3">
+      &copy; <span id="currentYear"></span> PathFinders Network. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Update current year dynamically
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const adminEmails = ["nehtehnaomi123@gmail.com","admin2@example.com","admin3@example.com","youremail@example.com"];
+    const jobsListEl = document.getElementById("jobsList");
+    const searchInput = document.getElementById("searchInput");
+    const categoryButtons = document.querySelectorAll(".category-btn");
+    const addJobBtn = document.getElementById("addJobBtn");
+    const addJobForm = document.getElementById("addJobForm");
+    const jobForm = document.getElementById("jobForm");
+
+    let selectedCategory = "all";
+    let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+
+    function saveJobs() {
+      localStorage.setItem("jobs", JSON.stringify(jobs));
+    }
+
+    function removeExpiredJobs() {
+      const now = new Date();
+      let changed = false;
+      jobs = jobs.filter(job => {
+        if(new Date(job.deadline) < now) { changed = true; return false; }
+        return true;
+      });
+      if(changed) saveJobs();
+    }
+
+    function renderJobs() {
+      removeExpiredJobs();
+      const searchText = searchInput.value.toLowerCase();
+      const filteredJobs = jobs.filter(job => {
+        const matchesCategory = selectedCategory === "all" || job.category === selectedCategory;
+        const matchesSearch = job.title.toLowerCase().includes(searchText) || job.company.toLowerCase().includes(searchText);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filteredJobs.length === 0) {
+        jobsListEl.innerHTML = '<p class="text-center text-muted">No jobs found matching your criteria.</p>';
+        return;
+      }
+
+      const now = new Date();
+      jobsListEl.innerHTML = filteredJobs.map(job => {
+        const expired = new Date(job.deadline) < now;
+        return `
+          <div class="col-md-6 col-lg-4">
+            <div class="card job-card shadow-sm">
+              <div class="card-body">
+                ${expired ? '' : `<button class="btn btn-danger btn-sm delete-btn" onclick="deleteJob(${job.id})">Delete</button>`}
+                <h5 class="card-title">${job.title}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">${job.company}</h6>
+                <p class="card-text"><strong>Location:</strong> ${job.location}</p>
+                <p class="card-text"><strong>Category:</strong> ${job.category.charAt(0).toUpperCase() + job.category.slice(1)}</p>
+                <p class="card-text"><strong>Posted:</strong> ${job.postedAt}</p>
+                <p class="card-text"><strong>Deadline:</strong> ${job.deadline}</p>
+                <a href="${expired ? '#' : job.applyLink}" class="btn btn-primary" target="_blank">${expired ? "Link no longer available" : "Apply"}</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Filters
+    categoryButtons.forEach(btn => btn.addEventListener("click", () => {
+      categoryButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCategory = btn.getAttribute("data-category");
+      renderJobs();
+    }));
+    searchInput.addEventListener("input", renderJobs);
+
+    // Admin toggle form
+    addJobBtn.addEventListener("click", () => {
+      const email = prompt("Enter admin email to add a job:");
+      if(adminEmails.includes(email)) addJobForm.style.display = "block";
+      else alert("Access denied. You are not an admin.");
+    });
+
+    // Delete job (admin-only)
+    window.deleteJob = function(id) {
+      const email = prompt("Enter admin email to delete this job:");
+      if(adminEmails.includes(email)) {
+        jobs = jobs.filter(job => job.id !== id);
+        saveJobs();
+        renderJobs();
+      } else {
+        alert("Access denied. You are not an admin.");
+      }
+    }
+
+    // Add job form submission
+    jobForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const newJob = {
+        id: Date.now(),
+        title: document.getElementById("jobTitle").value,
+        company: document.getElementById("jobCompany").value,
+        location: document.getElementById("jobLocation").value,
+        category: document.getElementById("jobCategory").value,
+        applyLink: document.getElementById("jobLink").value,
+        postedAt: new Date().toLocaleString(),
+        deadline: document.getElementById("jobDeadline").value
+      };
+      jobs.push(newJob);
+      saveJobs();
+      jobForm.reset();
+      addJobForm.style.display = "none";
+      renderJobs();
+    });
+
+    renderJobs();
+    setInterval(renderJobs, 60000);
+  </script>
+</body>
+</html>
